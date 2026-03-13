@@ -1,7 +1,11 @@
+locals {
+  zone_name = replace(lookup(each.value, "domain_name", each.key), ".", "-")
+}
+
 resource "aws_route53_resolver_query_log_config" "itgix_landing_zone" {
   for_each = { for k, v in var.zones : k => v if var.create }
 
-  name = "${lookup(each.value, "domain_name", each.key)}-dns-query-logs"
+  name = "${local.zone_name}-dns-query-logs"
   // destination for query logs can be S3, Cloudwatch, or Kinesis Data Firehose
   destination_arn = aws_cloudwatch_log_group.itgix_landing_zone[each.key].arn
 
@@ -14,7 +18,7 @@ resource "aws_route53_resolver_query_log_config" "itgix_landing_zone" {
 resource "aws_cloudwatch_log_group" "itgix_landing_zone" {
   for_each = { for k, v in var.zones : k => v if var.create }
 
-  name              = "${lookup(each.value, "domain_name", each.key)}-dns-query-logs"
+  name              = "${local.zone_name}-dns-query-logs"
   retention_in_days = min(var.log_retention_days, 365)
 
   tags = merge(
