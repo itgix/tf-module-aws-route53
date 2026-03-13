@@ -14,7 +14,8 @@ resource "aws_route53_resolver_query_log_config" "itgix_landing_zone" {
 resource "aws_cloudwatch_log_group" "itgix_landing_zone" {
   for_each = { for k, v in var.zones : k => v if var.create }
 
-  name = "${lookup(each.value, "domain_name", each.key)}-dns-query-logs"
+  name              = "${lookup(each.value, "domain_name", each.key)}-dns-query-logs"
+  retention_in_days = min(var.log_retention_days, 365)
 
   tags = merge(
     lookup(each.value, "tags", {}),
