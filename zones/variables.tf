@@ -16,8 +16,19 @@ variable "tags" {
   default     = {}
 }
 
+variable "account_id" {
+  description = "AWS account ID used in the CloudWatch log resource policy ARN"
+  type        = string
+}
+
+variable "enable_query_logging" {
+  description = "Enable Route53 query logging to CloudWatch (only for public zones)"
+  type        = bool
+  default     = true
+}
+
 variable "log_retention_days" {
-  description = "CloudWatch log group retention in days (maximum 365)"
+  description = "CloudWatch log group retention in days"
   type        = number
-  default     = 365
+  default     = 90
 }

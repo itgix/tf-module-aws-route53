@@ -1,5 +1,3 @@
-# [zones github repository](https://github.com/terraform-aws-modules/terraform-aws-route53/tree/master/modules/zones) - to manage Route53 zones
-
 resource "aws_route53_zone" "this" {
   for_each = { for k, v in var.zones : k => v if var.create }
 
