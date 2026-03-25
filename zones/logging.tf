@@ -1,5 +1,5 @@
 resource "aws_cloudwatch_log_group" "route53_query_log" {
-  provider = aws.virginia # query logging requires CloudWatch log groups in us-east-1
+  provider = aws.us_east_1 # query logging requires CloudWatch log groups in us-east-1
   # Route53 query logging only works with public zones
   # the conditional here makes sure that query logging is enabled only when there is no VPC block (meaning the zone is public)
   for_each = { for k, v in var.zones : k => v if var.create && var.enable_query_logging && !contains(keys(v), "vpc") }
@@ -31,7 +31,7 @@ data "aws_iam_policy_document" "route53_query_logging" {
 }
 
 resource "aws_cloudwatch_log_resource_policy" "route53_query_logging" {
-  provider = aws.virginia
+  provider = aws.us_east_1
   count    = var.create && var.enable_query_logging ? 1 : 0
 
   policy_document = data.aws_iam_policy_document.route53_query_logging[0].json
