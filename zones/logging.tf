@@ -43,6 +43,7 @@ resource "aws_route53_query_log" "this" {
 
   depends_on = [aws_cloudwatch_log_resource_policy.route53_query_logging]
 
-  cloudwatch_log_group_arn = "${aws_cloudwatch_log_group.route53_query_log[each.key].arn}:*"
-  zone_id                  = aws_route53_zone.this[each.key].zone_id
+  cloudwatch_log_group_arn = aws_cloudwatch_log_group.route53_query_log[each.key].arn
+  # cloudwatch_log_group_arn = "${aws_cloudwatch_log_group.route53_query_log[each.key].arn}:*"
+  zone_id = aws_route53_zone.this[each.key].zone_id
 }
