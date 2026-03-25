@@ -1,7 +1,7 @@
-# Route53 query logging requires CloudWatch log groups in us-east-1
-# and only works for public hosted zones.
-
 resource "aws_cloudwatch_log_group" "route53_query_log" {
+  provider = aws.virginia # query logging requires CloudWatch log groups in us-east-1
+  # Route53 query logging only works with public zones
+  # the conditional here makes sure that query logging is enabled only when there is no VPC block (meaning the zone is public)
   for_each = { for k, v in var.zones : k => v if var.create && var.enable_query_logging && !contains(keys(v), "vpc") }
 
   name              = "/aws/route53/${lookup(each.value, "domain_name", each.key)}"
@@ -31,7 +31,8 @@ data "aws_iam_policy_document" "route53_query_logging" {
 }
 
 resource "aws_cloudwatch_log_resource_policy" "route53_query_logging" {
-  count = var.create && var.enable_query_logging ? 1 : 0
+  provider = aws.virginia
+  count    = var.create && var.enable_query_logging ? 1 : 0
 
   policy_document = data.aws_iam_policy_document.route53_query_logging[0].json
   policy_name     = "route53-query-logging"
